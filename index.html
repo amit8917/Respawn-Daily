@@ -1185,6 +1185,53 @@
             user-select: text !important;
         }
 
+        /* Animated Indian Flag Styles */
+        .indian-flag-container {
+            display: inline-block;
+            position: relative;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .animated-flag {
+            border-radius: 2px;
+            transition: transform 0.3s ease;
+        }
+        
+        .animated-flag:hover {
+            transform: scale(1.1);
+        }
+        
+        .indian-flag-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #FF9933, #FFFFFF, #138808, #FF9933);
+            border-radius: 2px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .indian-flag-container:hover::before {
+            opacity: 0.3;
+            animation: flagGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes flagGlow {
+            0%, 100% { 
+                box-shadow: 0 0 5px rgba(255, 153, 51, 0.5);
+            }
+            33% { 
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            }
+            66% { 
+                box-shadow: 0 0 5px rgba(19, 136, 8, 0.5);
+            }
+        }
+
         /* Remove vertical gap between header and hero */
         header.glass-header {
             padding-bottom: 0 !important;
@@ -1395,6 +1442,54 @@
                         <path d="M8 18l2-2 2 2" stroke="#dc2626" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
                     </svg>
                     <h3 class="text-xl font-bold" style="color: var(--border-color); line-height: 1; margin: 0;">Respawn Daily</h3>
+                    
+                    <!-- Animated Indian Flag -->
+                    <div class="indian-flag-container ml-4">
+                        <svg class="w-8 h-5 animated-flag" viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Flag Saffron Stripe -->
+                            <rect x="0" y="0" width="36" height="8" fill="#FF9933">
+                                <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
+                            </rect>
+                            <!-- Flag White Stripe -->
+                            <rect x="0" y="8" width="36" height="8" fill="#FFFFFF">
+                                <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" begin="0.5s" repeatCount="indefinite"/>
+                            </rect>
+                            <!-- Flag Green Stripe -->
+                            <rect x="0" y="16" width="36" height="8" fill="#138808">
+                                <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" begin="1s" repeatCount="indefinite"/>
+                            </rect>
+                            <!-- Ashoka Chakra -->
+                            <g transform="translate(18, 12)">
+                                <circle cx="0" cy="0" r="3" fill="none" stroke="#000080" stroke-width="0.5">
+                                    <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="10s" repeatCount="indefinite"/>
+                                </circle>
+                                <!-- Chakra Spokes -->
+                                <g stroke="#000080" stroke-width="0.3">
+                                    <line x1="0" y1="-3" x2="0" y2="3">
+                                        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="10s" repeatCount="indefinite"/>
+                                    </line>
+                                    <line x1="-3" y1="0" x2="3" y2="0">
+                                        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="10s" repeatCount="indefinite"/>
+                                    </line>
+                                    <line x1="-2.1" y1="-2.1" x2="2.1" y2="2.1">
+                                        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="10s" repeatCount="indefinite"/>
+                                    </line>
+                                    <line x1="-2.1" y1="2.1" x2="2.1" y2="-2.1">
+                                        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="10s" repeatCount="indefinite"/>
+                                    </line>
+                                </g>
+                                <!-- Center dots -->
+                                <circle cx="0" cy="-3" r="0.2" fill="#000080"/>
+                                <circle cx="3" cy="0" r="0.2" fill="#000080"/>
+                                <circle cx="0" cy="3" r="0.2" fill="#000080"/>
+                                <circle cx="-3" cy="0" r="0.2" fill="#000080"/>
+                                <circle cx="-2.1" cy="-2.1" r="0.2" fill="#000080"/>
+                                <circle cx="2.1" cy="2.1" r="0.2" fill="#000080"/>
+                                <circle cx="-2.1" cy="2.1" r="0.2" fill="#000080"/>
+                                <circle cx="2.1" cy="-2.1" r="0.2" fill="#000080"/>
+                            </g>
+                        </svg>
+                    </div>
                 </div>
                 
                 <!-- Navigation -->
