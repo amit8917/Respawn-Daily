@@ -2708,30 +2708,97 @@
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCTKXqF8Q7JQ7JQ7JQ7JQ7JQ7JQ7JQ7JQ7",
-            authDomain: "tech-blog-suggestions.firebaseapp.com",
-            databaseURL: "https://tech-blog-suggestions-default-rtdb.firebaseio.com",
-            projectId: "tech-blog-suggestions",
-            storageBucket: "tech-blog-suggestions.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef123456789"
+            apiKey: "AIzaSyDg4HeHicr3BtLtCbxx0-yLExkhrmcq4Zs",
+            authDomain: "tech-blog-suggestion.firebaseapp.com",
+            databaseURL: "https://tech-blog-suggestion-default-rtdb.firebaseio.com",
+            projectId: "tech-blog-suggestion",
+            storageBucket: "tech-blog-suggestion.firebasestorage.app",
+            messagingSenderId: "509851398812",
+            appId: "1:509851398812:web:c8fb6783b741cd9546b359",
+            measurementId: "G-R2D8JC5BM6"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // Initialize Firebase with fallback
+        let database;
+        let useFirebase = false;
 
-        // Firebase Functions for Suggestions
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            useFirebase = true;
+            console.log('Firebase initialized successfully');
+            showNotification('🔥 Connected to Firebase - Suggestions will sync across devices!', 'success');
+        } catch (error) {
+            console.warn('Firebase initialization failed, using localStorage fallback:', error);
+            useFirebase = false;
+            showNotification('⚠️ Using local storage - Set up Firebase for cross-device sync!', 'warning');
+        }
+
+        // Firebase Functions for Suggestions (with fallback)
         function saveSuggestionToFirebase(suggestion) {
-            return database.ref('suggestions').push(suggestion);
+            console.log('Saving suggestion:', suggestion);
+            console.log('Using Firebase:', useFirebase);
+            
+            if (useFirebase) {
+                return database.ref('suggestions').push(suggestion);
+            } else {
+                // Fallback to localStorage
+                return new Promise((resolve) => {
+                    console.log('Saving to localStorage...');
+                    let suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                    console.log('Current suggestions before save:', suggestions);
+                    suggestions.push(suggestion);
+                    console.log('Suggestions after push:', suggestions);
+                    localStorage.setItem('suggestions', JSON.stringify(suggestions));
+                    console.log('Saved to localStorage successfully!');
+                    
+                    // Verify it was saved
+                    const verify = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                    console.log('Verification - localStorage now has:', verify);
+                    
+                    resolve();
+                });
+            }
         }
 
         function loadSuggestionsFromFirebase() {
-            return database.ref('suggestions').once('value');
+            if (useFirebase) {
+                return database.ref('suggestions').once('value');
+            } else {
+                // Fallback to localStorage
+                return new Promise((resolve) => {
+                    const suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                    console.log('Loading from localStorage:', suggestions);
+                    const mockSnapshot = {
+                        forEach: (callback) => {
+                            suggestions.forEach((suggestion) => {
+                                callback({
+                                    key: suggestion.id || Date.now().toString(),
+                                    val: () => suggestion
+                                });
+                            });
+                        }
+                    };
+                    resolve(mockSnapshot);
+                });
+            }
         }
 
         function deleteSuggestionFromFirebase(suggestionId) {
-            return database.ref('suggestions/' + suggestionId).remove();
+            if (useFirebase) {
+                return database.ref('suggestions/' + suggestionId).remove();
+            } else {
+                // Fallback to localStorage
+                return new Promise((resolve) => {
+                    let suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                    console.log('Deleting suggestion with ID:', suggestionId);
+                    console.log('Current suggestions:', suggestions);
+                    suggestions = suggestions.filter(s => s.id !== suggestionId);
+                    console.log('Suggestions after deletion:', suggestions);
+                    localStorage.setItem('suggestions', JSON.stringify(suggestions));
+                    resolve();
+                });
+            }
         }
 
         // Theme Toggle
@@ -3066,6 +3133,29 @@
 
         // Suggestions Manager Functions
         function openSuggestionsManager() {
+            console.log('Opening suggestions manager...');
+            
+            // Check localStorage first
+            const localSuggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+            console.log('Local storage suggestions:', localSuggestions);
+            console.log('Using Firebase:', useFirebase);
+            
+            // Add a test button to manually check localStorage
+            const testBtn = document.createElement('button');
+            testBtn.textContent = 'Test localStorage';
+            testBtn.onclick = function() {
+                const suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                alert('LocalStorage has ' + suggestions.length + ' suggestions: ' + JSON.stringify(suggestions, null, 2));
+            };
+            testBtn.style.position = 'fixed';
+            testBtn.style.top = '10px';
+            testBtn.style.right = '10px';
+            testBtn.style.zIndex = '9999';
+            testBtn.style.background = 'red';
+            testBtn.style.color = 'white';
+            testBtn.style.padding = '10px';
+            document.body.appendChild(testBtn);
+            
             document.getElementById('suggestionsManagerModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             loadSuggestions();
@@ -3116,21 +3206,42 @@
         }
         
         function loadSuggestions() {
+            console.log('Loading suggestions...');
+            console.log('Using Firebase:', useFirebase);
+            
             // Load from Firebase
             loadSuggestionsFromFirebase()
                 .then((snapshot) => {
+                    console.log('Snapshot received:', snapshot);
                     const suggestions = [];
                     snapshot.forEach((childSnapshot) => {
                         const suggestion = childSnapshot.val();
-                        suggestion.firebaseId = childSnapshot.key; // Store Firebase ID for deletion
+                        const key = childSnapshot.key;
+                        console.log('Processing suggestion:', suggestion, 'with key:', key);
+                        
+                        // Ensure the suggestion has the correct ID
+                        suggestion.firebaseId = key;
+                        if (!suggestion.id) {
+                            suggestion.id = key;
+                        }
+                        
                         suggestions.push(suggestion);
                     });
+                    
+                    console.log('Final suggestions array:', suggestions);
                     
                     const suggestionsList = document.getElementById('suggestionsList');
                     const totalSuggestions = document.getElementById('totalSuggestions');
                     const contentSuggestions = document.getElementById('contentSuggestions');
                     const featureSuggestions = document.getElementById('featureSuggestions');
                     const bugSuggestions = document.getElementById('bugSuggestions');
+                    
+                    console.log('DOM elements found:', { suggestionsList, totalSuggestions, contentSuggestions, featureSuggestions, bugSuggestions });
+                    
+                    if (!suggestionsList) {
+                        console.error('Suggestions list element not found!');
+                        return;
+                    }
                     
                     // Update stats
                     totalSuggestions.textContent = suggestions.length;
@@ -3139,6 +3250,7 @@
                     bugSuggestions.textContent = suggestions.filter(s => s.type === 'bug').length;
                     
                     if (suggestions.length === 0) {
+                        console.log('No suggestions found, showing empty state');
                         suggestionsList.innerHTML = `
                             <div class="text-center py-8" style="color: var(--text-secondary);">
                                 <i class="fas fa-inbox text-4xl mb-4 opacity-50"></i>
@@ -3148,6 +3260,7 @@
                         return;
                     }
                     
+                    console.log('Rendering suggestions...');
                     suggestionsList.innerHTML = suggestions.map((suggestion) => {
                         const typeColors = {
                             'content': 'bg-blue-100 text-blue-600',
@@ -3158,6 +3271,8 @@
                         const typeColor = typeColors[suggestion.type] || 'bg-gray-100 text-gray-600';
                         const date = new Date(suggestion.timestamp).toLocaleDateString();
                         const time = new Date(suggestion.timestamp).toLocaleTimeString();
+                        
+                        console.log('Rendering suggestion:', suggestion.name, suggestion.firebaseId);
                         
                         return `
                             <div class="p-4 rounded-lg border" style="background-color: var(--card-bg); border-color: var(--border-color);">
@@ -3180,6 +3295,8 @@
                             </div>
                         `;
                     }).join('');
+                    
+                    console.log('Suggestions rendered successfully!');
                     
                     // Update sync status
                     const syncStatus = document.getElementById('syncStatus');
@@ -3299,34 +3416,50 @@
         
         function markAsResolved(firebaseId) {
             if (confirm('Mark this suggestion as resolved?')) {
-                // Get the suggestion from Firebase
-                loadSuggestionsFromFirebase()
-                    .then((snapshot) => {
-                        let suggestionToUpdate = null;
-                        snapshot.forEach((childSnapshot) => {
-                            if (childSnapshot.key === firebaseId) {
-                                suggestionToUpdate = childSnapshot.val();
-                            }
-                        });
-                        
-                        if (suggestionToUpdate) {
-                            suggestionToUpdate.resolved = true;
-                            suggestionToUpdate.resolvedAt = new Date().toISOString();
+                if (useFirebase) {
+                    // Get the suggestion from Firebase
+                    loadSuggestionsFromFirebase()
+                        .then((snapshot) => {
+                            let suggestionToUpdate = null;
+                            snapshot.forEach((childSnapshot) => {
+                                if (childSnapshot.key === firebaseId) {
+                                    suggestionToUpdate = childSnapshot.val();
+                                }
+                            });
                             
-                            // Update the suggestion in Firebase
-                            return firebase.database().ref('suggestions/' + firebaseId).update(suggestionToUpdate);
-                        } else {
-                            throw new Error('Suggestion not found');
-                        }
-                    })
-                    .then(() => {
+                            if (suggestionToUpdate) {
+                                suggestionToUpdate.resolved = true;
+                                suggestionToUpdate.resolvedAt = new Date().toISOString();
+                                
+                                // Update the suggestion in Firebase
+                                return firebase.database().ref('suggestions/' + firebaseId).update(suggestionToUpdate);
+                            } else {
+                                throw new Error('Suggestion not found');
+                            }
+                        })
+                        .then(() => {
+                            loadSuggestions();
+                            showNotification('Suggestion marked as resolved!', 'success');
+                        })
+                        .catch((error) => {
+                            console.error('Error marking suggestion as resolved:', error);
+                            showNotification('❌ Error updating suggestion.', 'error');
+                        });
+                } else {
+                    // Fallback to localStorage
+                    let suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                    const suggestionIndex = suggestions.findIndex(s => s.id === firebaseId);
+                    
+                    if (suggestionIndex !== -1) {
+                        suggestions[suggestionIndex].resolved = true;
+                        suggestions[suggestionIndex].resolvedAt = new Date().toISOString();
+                        localStorage.setItem('suggestions', JSON.stringify(suggestions));
                         loadSuggestions();
                         showNotification('Suggestion marked as resolved!', 'success');
-                    })
-                    .catch((error) => {
-                        console.error('Error marking suggestion as resolved:', error);
-                        showNotification('❌ Error updating suggestion.', 'error');
-                    });
+                    } else {
+                        showNotification('❌ Suggestion not found.', 'error');
+                    }
+                }
             }
         }
         
@@ -3871,60 +4004,157 @@
         
         // Suggestion Modal Functions
         function openSuggestionModal() {
-            console.log('Opening suggestion modal');
+            console.log('Opening suggestion modal...');
             const modal = document.getElementById('suggestionModal');
+            
+            if (!modal) {
+                console.error('Suggestion modal not found!');
+                return;
+            }
+            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
+            console.log('Modal opened successfully!');
         }
         
         function closeSuggestionModal() {
-            console.log('Closing suggestion modal');
+            console.log('Closing suggestion modal...');
             const modal = document.getElementById('suggestionModal');
+            
+            if (!modal) {
+                console.error('Suggestion modal not found for closing!');
+                return;
+            }
+            
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
+            console.log('Modal closed successfully!');
         }
         
-        // Suggestion Form Submission
-        document.getElementById('suggestionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Test function for suggestion form
+        function testSuggestionForm() {
+            console.log('Testing suggestion form...');
+            const form = document.getElementById('suggestionForm');
+            const name = document.getElementById('suggestionName');
+            const email = document.getElementById('suggestionEmail');
+            const type = document.getElementById('suggestionType');
+            const message = document.getElementById('suggestionMessage');
             
-            const name = document.getElementById('suggestionName').value;
-            const email = document.getElementById('suggestionEmail').value;
-            const type = document.getElementById('suggestionType').value;
-            const message = document.getElementById('suggestionMessage').value;
+            console.log('Form elements:', { form, name, email, type, message });
             
-            // Create suggestion object
-            const suggestion = {
-                name: name,
-                email: email,
-                type: type,
-                message: message,
-                timestamp: new Date().toISOString(),
-                status: 'pending',
-                id: Date.now().toString()
-            };
+            if (!form) {
+                console.error('Form not found!');
+                alert('Form not found!');
+                return;
+            }
             
-            // Save to Firebase
-            saveSuggestionToFirebase(suggestion)
-                .then(() => {
-                    // Show success message
-                    showNotification('✅ Thank you! Your suggestion has been submitted successfully.', 'success');
+            // Fill test data
+            name.value = 'Test User';
+            email.value = 'test@example.com';
+            type.value = 'content';
+            message.value = 'This is a test suggestion.';
+            
+            console.log('Test data filled, submitting form...');
+            
+            // Trigger form submission
+            form.dispatchEvent(new Event('submit'));
+        }
+        
+        // Suggestion Form Submission - Set up immediately and after DOM is loaded
+        console.log('Setting up suggestion form immediately...');
+        
+        // Try to set up immediately
+        const setupSuggestionForm = function() {
+            console.log('Setting up suggestion form listener...');
+            const suggestionForm = document.getElementById('suggestionForm');
+            console.log('Suggestion form found:', suggestionForm);
+            
+            if (suggestionForm) {
+                suggestionForm.addEventListener('submit', function(e) {
+                    console.log('FORM SUBMITTED! Event fired!');
+                    e.preventDefault();
+                    alert('Form submission detected! Check console for details.');
                     
-                    // Reset form and close modal
-                    document.getElementById('suggestionForm').reset();
-                    closeSuggestionModal();
+                    const name = document.getElementById('suggestionName').value;
+                    const email = document.getElementById('suggestionEmail').value;
+                    const type = document.getElementById('suggestionType').value;
+                    const message = document.getElementById('suggestionMessage').value;
                     
-                    // Refresh suggestions if admin is viewing
-                    if (document.getElementById('suggestionsManagerModal').classList.contains('hidden') === false) {
-                        loadSuggestions();
+                    console.log('Form data:', { name, email, type, message });
+                    
+                    if (!name || !message) {
+                        alert('Please fill in required fields!');
+                        return;
                     }
-                })
-                .catch((error) => {
-                    console.error('Error saving suggestion:', error);
-                    showNotification('❌ Error submitting suggestion. Please try again.', 'error');
+                    
+                    // Create suggestion object
+                    const suggestion = {
+                        name: name,
+                        email: email,
+                        type: type,
+                        message: message,
+                        timestamp: new Date().toISOString(),
+                        status: 'pending',
+                        id: Date.now().toString()
+                    };
+                    
+                    console.log('Suggestion object:', suggestion);
+                    
+                    // Save to Firebase
+                    console.log('About to call saveSuggestionToFirebase...');
+                    
+                    // Also try direct localStorage save as backup
+                    console.log('Trying direct localStorage save...');
+                    try {
+                        let directSuggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                        directSuggestions.push(suggestion);
+                        localStorage.setItem('suggestions', JSON.stringify(directSuggestions));
+                        console.log('Direct localStorage save successful!');
+                        
+                        const verify = JSON.parse(localStorage.getItem('suggestions') || '[]');
+                        console.log('Direct save verification:', verify);
+                    } catch (directError) {
+                        console.error('Direct localStorage save failed:', directError);
+                    }
+                    
+                    saveSuggestionToFirebase(suggestion)
+                        .then(() => {
+                            console.log('Suggestion saved successfully!');
+                            alert('Suggestion submitted successfully!');
+                            // Show success message
+                            showNotification('✅ Thank you! Your suggestion has been submitted successfully.', 'success');
+                            
+                            // Reset form and close modal
+                            document.getElementById('suggestionForm').reset();
+                            closeSuggestionModal();
+                            
+                            // Refresh suggestions if admin is viewing
+                            if (document.getElementById('suggestionsManagerModal').classList.contains('hidden') === false) {
+                                loadSuggestions();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error saving suggestion:', error);
+                            alert('Error: ' + error.message);
+                            showNotification('❌ Error submitting suggestion. Please try again.', 'error');
+                        });
                 });
+                console.log('Event listener attached successfully!');
+            } else {
+                console.error('Suggestion form not found!');
+                alert('Suggestion form not found!');
+            }
+        };
+        
+        // Try immediate setup
+        setupSuggestionForm();
+        
+        // Also set up after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded fired, setting up form again...');
+            setupSuggestionForm();
         });
         
         // The duplicate code and function have been removed to fix syntax errors
