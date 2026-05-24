@@ -2295,11 +2295,120 @@
                         <div style="margin-top:16px;display:inline-block;padding:4px 12px;background:rgba(234,179,8,0.15);color:#ca8a04;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.05em;">FEEDBACK</div>
                     </div>
 
+
+                    <!-- Change Admin Photo -->
+                    <div onclick="openAdminPhotoModal()" style="background:#1a1a2e;border:1px solid rgba(139,92,246,0.5);border-radius:16px;padding:28px;cursor:pointer;transition:all 0.25s ease;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(139,92,246,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                        <div style="width:52px;height:52px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 4px 16px rgba(139,92,246,0.35);">
+                            <svg width="24" height="24" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h4 style="font-size:17px;font-weight:700;margin-bottom:6px;color:#f1f5f9;">Admin Photo</h4>
+                        <p style="font-size:13px;color:#94a3b8;line-height:1.6;">Update the admin profile photo and name shown in the footer for all visitors.</p>
+                        <div style="margin-top:16px;display:inline-block;padding:4px 12px;background:rgba(139,92,246,0.15);color:#8b5cf6;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.05em;">PROFILE</div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 
+
+    <!-- ═══════════════════════════════════
+         Admin Photo Modal
+         ═══════════════════════════════════ -->
+    <div id="adminPhotoModal" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,0.97);">
+        <div style="background:#12161f;border:1px solid rgba(139,92,246,0.25);border-radius:18px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.8);">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,0.07);background:linear-gradient(135deg,rgba(139,92,246,0.08),transparent);">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:36px;height:36px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg width="17" height="17" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:16px;font-weight:700;color:#f1f5f9;">Admin Profile Photo</div>
+                        <div style="font-size:11px;color:#475569;margin-top:2px;">Visible to all visitors in the footer</div>
+                    </div>
+                </div>
+                <button onclick="closeAdminPhotoModal()" style="background:transparent!important;border:none!important;color:#475569!important;cursor:pointer;padding:6px;line-height:0;border-radius:8px;" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#475569'">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+
+                <!-- Current photo preview -->
+                <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+                    <div id="apCurrentPhoto" style="width:64px;height:64px;border-radius:50%;border:2px solid rgba(139,92,246,0.5);background:#1e2535;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                        <svg width="28" height="28" fill="#475569" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <div>
+                        <div id="apCurrentName" style="font-size:15px;font-weight:600;color:#f1f5f9;">Site Developer</div>
+                        <div style="font-size:12px;color:#475569;margin-top:2px;">Current footer photo</div>
+                        <button onclick="apClearPhoto()" style="margin-top:6px;background:transparent!important;border:none!important;color:#ef4444!important;font-size:11px;cursor:pointer;padding:0;font-weight:600;" onmouseover="this.style.color='#fca5a5!important'" onmouseout="this.style.color='#ef4444!important'">✕ Remove photo</button>
+                    </div>
+                </div>
+
+                <!-- Name input -->
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px;">Display Name</label>
+                    <input id="apName" type="text" placeholder="e.g. Amit1920, John Dev…" maxlength="40"
+                        style="width:100%;padding:11px 14px;background:#1a2133;border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#f1f5f9;font-size:14px;outline:none;box-sizing:border-box;transition:border-color .2s;"
+                        onfocus="this.style.borderColor='#8b5cf6'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+                </div>
+
+                <!-- Photo options: URL or Upload -->
+                <div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px;">New Photo</label>
+
+                    <!-- Tabs -->
+                    <div style="display:flex;gap:6px;margin-bottom:12px;">
+                        <button id="apTabUrl" onclick="apSwitchTab('url')" style="flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(139,92,246,0.6)!important;background:rgba(139,92,246,0.15)!important;color:#a78bfa!important;transition:all .2s;">🔗 Paste URL</button>
+                        <button id="apTabFile" onclick="apSwitchTab('file')" style="flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,0.08)!important;background:transparent!important;color:#475569!important;transition:all .2s;">📁 Upload File</button>
+                    </div>
+
+                    <!-- URL panel -->
+                    <div id="apPanelUrl">
+                        <div style="display:flex;gap:8px;">
+                            <input id="apPhotoUrl" type="url" placeholder="https://example.com/photo.jpg"
+                                style="flex:1;padding:11px 14px;background:#1a2133;border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#f1f5f9;font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s;"
+                                onfocus="this.style.borderColor='#8b5cf6'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"
+                                oninput="apPreviewNew(this.value)">
+                            <button onclick="apPreviewNew(document.getElementById('apPhotoUrl').value)"
+                                style="padding:11px 14px;background:#1a2133!important;border:1px solid rgba(255,255,255,0.1)!important;border-radius:10px;color:#94a3b8!important;font-size:12px;cursor:pointer;white-space:nowrap;"
+                                onmouseover="this.style.borderColor='#8b5cf6!important'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)!important'">Preview</button>
+                        </div>
+                    </div>
+
+                    <!-- File panel -->
+                    <div id="apPanelFile" style="display:none;">
+                        <label style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;border:2px dashed rgba(139,92,246,0.3);border-radius:10px;cursor:pointer;background:rgba(139,92,246,0.04);transition:all .2s;" onmouseover="this.style.borderColor='rgba(139,92,246,0.6)'" onmouseout="this.style.borderColor='rgba(139,92,246,0.3)'">
+                            <svg width="20" height="20" fill="none" stroke="#8b5cf6" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4"/></svg>
+                            <span style="color:#8b5cf6;font-size:13px;font-weight:600;">Click to choose a photo</span>
+                            <input id="apPhotoFile" type="file" accept="image/*" style="display:none;" onchange="apHandleFile(this)">
+                        </label>
+                    </div>
+
+                    <!-- New photo preview -->
+                    <div id="apNewPreview" style="display:none;margin-top:12px;display:none;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(139,92,246,0.2);border-radius:10px;">
+                        <img id="apNewImg" src="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid rgba(139,92,246,0.4);">
+                        <div>
+                            <div style="font-size:13px;color:#a78bfa;font-weight:600;">✓ Photo ready</div>
+                            <div style="font-size:11px;color:#475569;margin-top:2px;">Click Save to apply</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:4px;border-top:1px solid rgba(255,255,255,0.07);">
+                    <button onclick="closeAdminPhotoModal()" style="padding:10px 18px;background:#1a2133!important;border:1px solid rgba(255,255,255,0.10)!important;border-radius:10px;color:#94a3b8!important;font-size:13px;font-weight:600;cursor:pointer;">Cancel</button>
+                    <button onclick="apSave()" style="padding:10px 22px;background:linear-gradient(135deg,#8b5cf6,#7c3aed)!important;border:none!important;border-radius:10px;color:#fff!important;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(139,92,246,0.35);"
+                        onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">💾 Save Changes</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <!-- ═══════════════════════════════════════
          Blog Editor Modal
@@ -3386,7 +3495,188 @@
             showNotification('🎉 Blog published successfully!', 'success');
         }
 
-                // Admin Panel Functions
+        
+        // ═══════════════════════════════════════════
+        //  Admin Photo Modal
+        // ═══════════════════════════════════════════
+        let apPendingData = null; // holds base64 or url before save
+
+        function openAdminPhotoModal() {
+            // Load current values
+            const img  = localStorage.getItem('footerDevImage') || '';
+            const name = localStorage.getItem('footerDevName')  || 'Site Developer';
+            const photoDom = document.getElementById('apCurrentPhoto');
+            document.getElementById('apCurrentName').textContent = name;
+            document.getElementById('apName').value = name === 'Site Developer' ? '' : name;
+            if (img) {
+                photoDom.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                photoDom.innerHTML = `<svg width="28" height="28" fill="#475569" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+            }
+            // Reset new preview
+            document.getElementById('apNewPreview').style.display = 'none';
+            document.getElementById('apPhotoUrl').value = '';
+            apPendingData = null;
+            apSwitchTab('url');
+            document.getElementById('adminPhotoModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAdminPhotoModal() {
+            document.getElementById('adminPhotoModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function apSwitchTab(tab) {
+            const urlBtn  = document.getElementById('apTabUrl');
+            const fileBtn = document.getElementById('apTabFile');
+            const urlPanel  = document.getElementById('apPanelUrl');
+            const filePanel = document.getElementById('apPanelFile');
+            if (tab === 'url') {
+                urlBtn.style.background  = 'rgba(139,92,246,0.15)';
+                urlBtn.style.borderColor = 'rgba(139,92,246,0.6)';
+                urlBtn.style.color       = '#a78bfa';
+                fileBtn.style.background  = 'transparent';
+                fileBtn.style.borderColor = 'rgba(255,255,255,0.08)';
+                fileBtn.style.color       = '#475569';
+                urlPanel.style.display  = 'block';
+                filePanel.style.display = 'none';
+            } else {
+                fileBtn.style.background  = 'rgba(139,92,246,0.15)';
+                fileBtn.style.borderColor = 'rgba(139,92,246,0.6)';
+                fileBtn.style.color       = '#a78bfa';
+                urlBtn.style.background  = 'transparent';
+                urlBtn.style.borderColor = 'rgba(255,255,255,0.08)';
+                urlBtn.style.color       = '#475569';
+                filePanel.style.display = 'block';
+                urlPanel.style.display  = 'none';
+            }
+        }
+
+        function apPreviewNew(url) {
+            if (!url || !url.trim()) return;
+            const img  = document.getElementById('apNewImg');
+            const prev = document.getElementById('apNewPreview');
+            img.src = url.trim();
+            img.onload  = () => { prev.style.display = 'flex'; apPendingData = url.trim(); };
+            img.onerror = () => { prev.style.display = 'none'; showNotification('Could not load that image URL.', 'error'); };
+        }
+
+        function apHandleFile(fileInput) {
+            const file = fileInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                apPendingData = e.target.result;
+                const img  = document.getElementById('apNewImg');
+                const prev = document.getElementById('apNewPreview');
+                img.src = apPendingData;
+                prev.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function apClearPhoto() {
+            if (!confirm('Remove the current admin photo from the footer?')) return;
+            apClearPhotoFromFirebase();
+            updateFooterDevImage();
+            openAdminPhotoModal();
+            showNotification('Admin photo removed for all visitors.', 'success');
+        }
+
+        function apSave() {
+            const name = document.getElementById('apName').value.trim();
+            let saved  = false;
+
+            // Warn if uploading large base64 to Firebase (>1MB)
+            if (apPendingData && apPendingData.startsWith('data:') && apPendingData.length > 1000000) {
+                showNotification('⚠️ Image too large for cloud sync. Please use an image URL instead.', 'error');
+                return;
+            }
+
+            const payload = {};
+            if (name)          { payload.adminName  = name;          saved = true; }
+            if (apPendingData) { payload.adminPhoto = apPendingData; saved = true; }
+
+            if (!saved) {
+                showNotification('Enter a name or choose a photo first.', 'error');
+                return;
+            }
+
+            // Always save to localStorage as immediate fallback
+            if (payload.adminName)  { localStorage.setItem('footerDevName', payload.adminName); updateFooterDevName(); }
+            if (payload.adminPhoto) { localStorage.setItem('footerDevImage', payload.adminPhoto); updateFooterDevImage(); }
+
+            // Save to Firebase so ALL visitors see it
+            if (useFirebase) {
+                payload.updatedAt = new Date().toISOString();
+                database.ref('adminProfile').set(payload)
+                    .then(() => {
+                        showNotification('✅ Profile saved to cloud — visible to ALL visitors!', 'success');
+                    })
+                    .catch(err => {
+                        console.warn('Firebase save failed:', err);
+                        showNotification('✅ Saved locally. Firebase sync failed — check rules.', 'success');
+                    });
+            } else {
+                showNotification('✅ Saved locally (Firebase offline). Photo visible on this browser only.', 'success');
+            }
+
+            closeAdminPhotoModal();
+        }
+
+        function apClearPhotoFromFirebase() {
+            if (useFirebase) {
+                database.ref('adminProfile/adminPhoto').remove().catch(e => console.warn(e));
+            }
+            localStorage.removeItem('footerDevImage');
+            sessionStorage.removeItem('footerDevImage');
+        }
+
+        // Load admin profile from Firebase on every page load — so ALL visitors see it
+        function apAutoLoad() {
+            // Firebase first (cross-device/visitor)
+            if (useFirebase) {
+                database.ref('adminProfile').once('value').then(snap => {
+                    const data = snap.val();
+                    if (data) {
+                        if (data.adminPhoto) {
+                            localStorage.setItem('footerDevImage', data.adminPhoto);
+                            updateFooterDevImage(data.adminPhoto);
+                        }
+                        if (data.adminName) {
+                            localStorage.setItem('footerDevName', data.adminName);
+                            updateFooterDevName();
+                        }
+                    }
+                }).catch(err => {
+                    // Fallback to localStorage if Firebase fails
+                    const img  = localStorage.getItem('footerDevImage') || '';
+                    const name = localStorage.getItem('footerDevName')  || '';
+                    if (img)  updateFooterDevImage(img);
+                    if (name) updateFooterDevName();
+                });
+            } else {
+                // localStorage fallback
+                const img  = localStorage.getItem('footerDevImage') || '';
+                const name = localStorage.getItem('footerDevName')  || '';
+                if (img)  updateFooterDevImage(img);
+                if (name) updateFooterDevName();
+            }
+
+            // Also listen for real-time changes (so footer updates live if admin changes it)
+            if (useFirebase) {
+                database.ref('adminProfile').on('value', snap => {
+                    const data = snap.val();
+                    if (!data) return;
+                    if (data.adminPhoto) updateFooterDevImage(data.adminPhoto);
+                    if (data.adminName)  updateFooterDevName(data.adminName);
+                });
+            }
+        }
+        apAutoLoad();
+
+        // Admin Panel Functions
         function openAdminPanel() {
             const adminSession = localStorage.getItem('adminSession') || sessionStorage.getItem('adminSession');
             if (adminSession) {
@@ -4258,10 +4548,9 @@
             }
         }
         
-        function updateFooterDevName() {
+        function updateFooterDevName(nameArg) {
             const footerNameEl = document.getElementById('footerDevName');
-            const currentName = localStorage.getItem('footerDevName') || sessionStorage.getItem('footerDevName') || 'Site Developer';
-            
+            const currentName = nameArg || localStorage.getItem('footerDevName') || sessionStorage.getItem('footerDevName') || 'Site Developer';
             if (footerNameEl) {
                 footerNameEl.textContent = currentName;
             }
